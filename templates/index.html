@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API TUMORES</title>
+    <!-- Importar la librería jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <style>
+        body {
+            font-family: 'Courier New', Courier, monospace;
+            background-color: #f4e4c1;
+            margin: 0;
+            padding: 50px;
+            color: #5a3e2b;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h2 {
+            color: #3e2723;
+            text-align: center;
+            font-size: 28px;
+            text-transform: uppercase;
+            border-bottom: 3px solid #8d6e63;
+            padding-bottom: 10px;
+            font-weight: bold;
+            width: 100%;
+        }
+        .content-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            width: 90%;
+            max-width: 1200px;
+        }
+        .image-container {
+            flex: 1;
+            max-width: 30%;
+            padding: 20px;
+            border: 3px solid #8d6e63;
+            border-radius: 10px;
+            background-color: #e0c3a0;
+            text-align: center;
+            box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.2);
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+            border: 3px solid #5a3e2b;
+            border-radius: 5px;
+        }
+        .data-container {
+            flex: 1;
+            max-width: 60%;
+            padding: 15px;
+            border: 3px solid #8d6e63;
+            border-radius: 10px;
+            background-color: #e0c3a0;
+            box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.2);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #f4e4c1;
+        }
+        table, th, td {
+            border: 2px solid #5a3e2b;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #8d6e63;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <h2>Imágenes MRI</h2>
+    <div class="content-container">
+        <div class="image-container">
+            <img src="/static/img/imagen_3.png" alt="Imagen 3">
+        </div>
+        <div class="image-container">
+            <img src="/static/img/imagen_4.png" alt="Imagen 4">
+        </div>
+        <div class="image-container">
+            <img src="/static/img/imagen_5.png" alt="Imagen 5">
+        </div>
+    </div>
+    <div class="data-container" id="data-summary"></div>
+    <div class="data-container" id="data-table"></div>
+    
+    <script>
+        function loadAndDisplayData() {
+            $.ajax({
+                type: "GET",
+                url: "/data_mask.csv",
+                dataType: "text",
+                success: function(data) {
+                    const tableHtml = csvToHtmlTable(data);
+                    $('#data-table').html(tableHtml);
+                }
+            });
+        }
+
+        function csvToHtmlTable(csvData) {
+            const rows = csvData.split("\n");
+            let tableHtml = "<table><thead><tr>";
+            const headers = rows[0].split(",");
+            headers.forEach(header => {
+                tableHtml += `<th>${header}</th>`;
+            });
+            tableHtml += "</tr></thead><tbody>";
+            for (let i = 1; i < rows.length; i++) {
+                if (rows[i].trim() === "") continue;
+                tableHtml += "<tr>";
+                const columns = rows[i].split(",");
+                columns.forEach(column => {
+                    tableHtml += `<td>${column}</td>`;
+                });
+                tableHtml += "</tr>";
+            }
+            tableHtml += "</tbody></table>";
+            return tableHtml;
+        }
+
+        $(document).ready(function() {
+            loadAndDisplayData();
+        });
+    </script>
+</body>
+</html>
